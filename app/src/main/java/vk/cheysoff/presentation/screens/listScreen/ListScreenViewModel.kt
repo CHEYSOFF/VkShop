@@ -78,7 +78,7 @@ class ListScreenViewModel @Inject constructor(
 
     private fun handleSearchResults(query: String): Flow<PagingData<ProductModel>> {
         return repository
-            .getProductsBySearch(query)
+            .getProductsByRemoteSearch(query)
             .map { pagingData ->
                 pagingData.map { it }
             }

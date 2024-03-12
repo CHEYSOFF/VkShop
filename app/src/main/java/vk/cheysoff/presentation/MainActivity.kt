@@ -30,7 +30,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        listScreenViewModel.processIntent(ShopIntent.GetAllProductsIntent)
         setContent {
             MyApplicationTheme {
                 val navController = rememberNavController()
@@ -41,6 +40,10 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     composable(NavigationItem.ListScreen.route) {
+                        LaunchedEffect(Unit) {
+                            listScreenViewModel.processIntent(ShopIntent.GetAllProductsIntent)
+                        }
+
                         ShowListScreen(
                             state = listScreenViewModel.state,
                             navController = navController

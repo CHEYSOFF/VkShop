@@ -69,7 +69,7 @@ fun ShowListScreen(
                 onIntentReceived(ShopIntent.SearchTextChangeIntent(query = newText))
             },
             onSearch = { onIntentReceived(ShopIntent.SearchIntent) },
-            active = !state.isSearching,
+            active = false,
             onActiveChange = { onIntentReceived(ShopIntent.OnToggleSearchIntent) },
             modifier = Modifier.fillMaxWidth(),
             placeholderText = "Search for products"

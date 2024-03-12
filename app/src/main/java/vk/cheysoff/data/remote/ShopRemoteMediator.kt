@@ -18,7 +18,7 @@ class ShopRemoteMediator @Inject constructor(
         loadType: LoadType,
         state: PagingState<Int, ProductEntity>
     ): MediatorResult {
-        return commonMediatorLogicLoad(loadType = loadType,
+        return commonRemoteMediatorLogicLoad(loadType = loadType,
             state = state,
             shopDatabase = shopDatabase,
             networkCall =  { skip, limit ->

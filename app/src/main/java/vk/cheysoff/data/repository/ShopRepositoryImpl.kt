@@ -38,7 +38,28 @@ class ShopRepositoryImpl @Inject constructor(
     }
 
     @OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
-    override fun getProductsBySearch(query: String): Flow<PagingData<ProductModel>> {
+    override fun getProductsByRemoteSearch(query: String): Flow<PagingData<ProductModel>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20),
+            remoteMediator = SearchRemoteMediator(
+                shopDatabase = shopDatabase,
+                api = shopApi,
+                queryString = query
+            ),
+            pagingSourceFactory = {
+                shopDatabase.dao.pagingSource()
+            }
+        )
+            .flow
+            .mapLatest { pagingData ->
+                pagingData.map { entity ->
+                    entity.toProductModel()
+                }
+            }
+    }
+
+    @OptIn(ExperimentalPagingApi::class)
+    override fun getProductsByLocalSearch(query: String): Flow<PagingData<ProductModel>> {
         return Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = SearchRemoteMediator(

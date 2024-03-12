@@ -11,11 +11,51 @@ import vk.cheysoff.data.mappers.toProductEntity
 import vk.cheysoff.data.remote.dto.ProductDto
 
 @OptIn(ExperimentalPagingApi::class)
-suspend fun commonMediatorLogicLoad(
+suspend fun commonRemoteMediatorLogicLoad(
     loadType: LoadType,
     state: PagingState<Int, ProductEntity>,
     shopDatabase: ShopDatabase,
     networkCall: suspend (skip: Int, limit: Int) -> List<ProductDto>
+): RemoteMediator.MediatorResult {
+    return commonMediatorLogicLoad(
+        loadType = loadType,
+        state = state,
+        shopDatabase = shopDatabase,
+        networkCall = networkCall,
+        databaseInteraction = { products ->
+            shopDatabase.withTransaction {
+                if (loadType == LoadType.REFRESH) {
+                    shopDatabase.dao.clearAll()
+                }
+                val productEntities = products.map { it.toProductEntity() }
+                shopDatabase.dao.upsertAll(productEntities)
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalPagingApi::class)
+suspend fun commonLocalMediatorLogicLoad(
+    loadType: LoadType,
+    state: PagingState<Int, ProductEntity>,
+    shopDatabase: ShopDatabase,
+    networkCall: suspend (skip: Int, limit: Int) -> List<ProductEntity>
+): RemoteMediator.MediatorResult {
+    return commonMediatorLogicLoad(
+        loadType = loadType,
+        state = state,
+        shopDatabase = shopDatabase,
+        networkCall = networkCall
+    )
+}
+
+@OptIn(ExperimentalPagingApi::class)
+private suspend fun <T> commonMediatorLogicLoad(
+    loadType: LoadType,
+    state: PagingState<Int, ProductEntity>,
+    shopDatabase: ShopDatabase,
+    networkCall: suspend (skip: Int, limit: Int) -> List<T>,
+    databaseInteraction: (suspend (products: List<ProductDto>) -> Unit)? = null
 ): RemoteMediator.MediatorResult {
     return try {
         val skip = when (loadType) {
@@ -34,14 +74,6 @@ suspend fun commonMediatorLogicLoad(
             skip,
             state.config.pageSize
         )
-
-        shopDatabase.withTransaction {
-            if (loadType == LoadType.REFRESH) {
-                shopDatabase.dao.clearAll()
-            }
-            val productEntities = products.map { it.toProductEntity() }
-            shopDatabase.dao.upsertAll(productEntities)
-        }
 
 
         RemoteMediator.MediatorResult.Success(
