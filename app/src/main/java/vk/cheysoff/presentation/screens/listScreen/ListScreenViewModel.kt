@@ -1,5 +1,6 @@
 package vk.cheysoff.presentation.screens.listScreen
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -101,7 +102,10 @@ class ListScreenViewModel @Inject constructor(
             SearchType.Remote -> repository.getProductsByRemoteSearch(query)
         }
             .map { pagingData ->
-                pagingData.map { it }
+                pagingData.map {
+                    Log.d("CHEYSER", it.title)
+                    it
+                }
             }
             .cachedIn(viewModelScope)
     }

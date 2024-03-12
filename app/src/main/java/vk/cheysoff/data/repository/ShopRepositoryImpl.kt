@@ -1,5 +1,6 @@
 package vk.cheysoff.data.repository
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -12,7 +13,7 @@ import vk.cheysoff.data.local.ProductEntity
 import vk.cheysoff.data.local.ShopDatabase
 import vk.cheysoff.data.mappers.toProductEntity
 import vk.cheysoff.data.mappers.toProductModel
-import vk.cheysoff.data.remote.SearchLocalMediator
+import vk.cheysoff.data.remote.LocalPagingSource
 import vk.cheysoff.data.remote.SearchRemoteMediator
 import vk.cheysoff.data.remote.ShopApi
 import vk.cheysoff.domain.model.ProductModel
@@ -63,17 +64,17 @@ class ShopRepositoryImpl @Inject constructor(
     override fun getProductsByLocalSearch(query: String): Flow<PagingData<ProductModel>> {
         return Pager(
             config = PagingConfig(pageSize = 20),
-            remoteMediator = SearchLocalMediator(
-                shopDatabase = shopDatabase,
-                queryString = query
-            ),
             pagingSourceFactory = {
-                shopDatabase.dao.pagingSource()
+                LocalPagingSource (
+                    database = shopDatabase,
+                    query = query
+                )
             }
         )
             .flow
             .mapLatest { pagingData ->
                 pagingData.map { entity ->
+                    Log.d("CHEYSOFFER", entity.title)
                     entity.toProductModel()
                 }
             }

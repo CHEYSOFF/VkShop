@@ -1,5 +1,6 @@
 package vk.cheysoff.data.remote
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -15,46 +16,7 @@ suspend fun commonRemoteMediatorLogicLoad(
     loadType: LoadType,
     state: PagingState<Int, ProductEntity>,
     shopDatabase: ShopDatabase,
-    networkCall: suspend (skip: Int, limit: Int) -> List<ProductDto>
-): RemoteMediator.MediatorResult {
-    return commonMediatorLogicLoad(
-        loadType = loadType,
-        state = state,
-        shopDatabase = shopDatabase,
-        networkCall = networkCall,
-        databaseInteraction = { products ->
-            shopDatabase.withTransaction {
-                if (loadType == LoadType.REFRESH) {
-                    shopDatabase.dao.clearAll()
-                }
-                val productEntities = products.map { it.toProductEntity() }
-                shopDatabase.dao.upsertAll(productEntities)
-            }
-        }
-    )
-}
-
-@OptIn(ExperimentalPagingApi::class)
-suspend fun commonLocalMediatorLogicLoad(
-    loadType: LoadType,
-    state: PagingState<Int, ProductEntity>,
-    shopDatabase: ShopDatabase,
-    networkCall: suspend (skip: Int, limit: Int) -> List<ProductEntity>
-): RemoteMediator.MediatorResult {
-    return commonMediatorLogicLoad(
-        loadType = loadType,
-        state = state,
-        shopDatabase = shopDatabase,
-        networkCall = networkCall
-    )
-}
-
-@OptIn(ExperimentalPagingApi::class)
-private suspend fun <T> commonMediatorLogicLoad(
-    loadType: LoadType,
-    state: PagingState<Int, ProductEntity>,
-    shopDatabase: ShopDatabase,
-    networkCall: suspend (skip: Int, limit: Int) -> List<T>,
+    networkCall: suspend (skip: Int, limit: Int) -> List<ProductDto>,
     databaseInteraction: (suspend (products: List<ProductDto>) -> Unit)? = null
 ): RemoteMediator.MediatorResult {
     return try {
@@ -74,8 +36,13 @@ private suspend fun <T> commonMediatorLogicLoad(
             skip,
             state.config.pageSize
         )
-
-        databaseInteraction?.invoke(products as List<ProductDto>)
+        shopDatabase.withTransaction {
+            if (loadType == LoadType.REFRESH) {
+                shopDatabase.dao.clearAll()
+            }
+            val productEntities = products.map { it.toProductEntity() }
+            shopDatabase.dao.upsertAll(productEntities)
+        }
 
         RemoteMediator.MediatorResult.Success(
             endOfPaginationReached = products.isEmpty()

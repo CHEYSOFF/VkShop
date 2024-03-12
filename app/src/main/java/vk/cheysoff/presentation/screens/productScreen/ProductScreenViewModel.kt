@@ -22,11 +22,10 @@ class ProductScreenViewModel @Inject constructor(
     fun processIntent(intent: ProductIntent) {
         when (intent) {
             is ProductIntent.GetProductByIdIntent -> loadProductInfo(intent.productId)
-            is ProductIntent.GoToShopIntent -> TODO()
         }
     }
 
-    fun loadProductInfo(productId: Int?) {
+    private fun loadProductInfo(productId: Int?) {
         viewModelScope.launch {
             state = state.copy(
                 isLoading = true,
