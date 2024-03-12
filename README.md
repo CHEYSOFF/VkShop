@@ -17,3 +17,13 @@
 <img src="https://github.com/CHEYSOFF/VkShop/assets/66472023/9da5c63e-69a2-4825-8503-51a5bcddfa12" height="500">
 <img src="https://github.com/CHEYSOFF/VkShop/assets/66472023/d70ca0d4-d31c-492a-850c-9ab70943d899" height="500">
 
+## Использованы:
+MVI
+Clean Code
+Compose
+Coroutines
+Paging 3
+Dagger-Hilt
+Room
+Retrofit
+Coil
