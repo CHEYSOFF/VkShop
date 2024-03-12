@@ -48,6 +48,9 @@ import kotlinx.coroutines.launch
 import vk.cheysoff.domain.model.ProductModel
 import vk.cheysoff.presentation.NavigationItem
 import vk.cheysoff.presentation.screens.listScreen.ListScreenState
+import vk.cheysoff.presentation.screens.listScreen.ShopIntent
+import vk.cheysoff.presentation.screens.mutualComponents.ShowError
+import vk.cheysoff.presentation.screens.mutualComponents.ShowLoader
 import vk.cheysoff.presentation.screens.mutualComponents.ShowRatingPriceRow
 import vk.cheysoff.presentation.screens.productScreen.components.ShowImageSlider
 
@@ -59,132 +62,138 @@ fun ShowProductScreen(
     val product = state.productModel
 
     if (state.isLoading) {
-    }
-
-    if (product == null) {
-        return // TODO: FIX thst
-    }
-
-    if (state.error != null) {
-    }
-
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-    ) {
-
-
+        ShowLoader()
+    } else if (product == null || state.error != null) {
         Box(
             modifier = Modifier
-                .align(Alignment.Center)
-                .fillMaxSize(0.9f)
-                .clip(shape = RoundedCornerShape(30.dp))
+                .fillMaxSize()
                 .background(MaterialTheme.colorScheme.primaryContainer)
-                .padding(8.dp),
         ) {
-            Box(
-                modifier = Modifier.fillMaxSize()
+            ShowError(
+                modifier = Modifier.align(Alignment.Center),
+                errorMessage = state.error ?: "Product is null"
             ) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        OutlinedButton(
-                            onClick = { navController.navigate(NavigationItem.ListScreen.route) },
-                            modifier = Modifier
-                                .size(50.dp),
-                            shape = CircleShape,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.background
-                            ),
-                            border = BorderStroke(2.dp, MaterialTheme.colorScheme.secondary),
-                            contentPadding = PaddingValues(0.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.KeyboardArrowLeft,
-                                contentDescription = "Go back",
-                                tint = MaterialTheme.colorScheme.secondary
-                            )
-                        }
-
-                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Text(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = product.title,
-                                style = MaterialTheme.typography.titleLarge,
-                                color = MaterialTheme.colorScheme.secondary,
-                                textAlign = TextAlign.End
-                            )
-                            Text(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = "By ${product.brand}",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.secondary,
-                                textAlign = TextAlign.End
-                            )
-                        }
-                    }
-
-                    ShowImageSlider(product = product)
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Category: ",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.secondary
-                        )
-                        Text(
-                            text = product.category,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Currently in stock: ",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.secondary,
-                        )
-                        Text(
-                            text = product.stock.toString(),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                    }
-
-
-
-                    ShowRatingPriceRow(
-                        rating = product.rating,
-                        price = product.price,
-                        discountPercentage = product.discountPercentage,
-                    )
-
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = product.description,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary,
-                        textAlign = TextAlign.Start
-                    )
-                }
+                navController.navigate(NavigationItem.ListScreen.route)
             }
         }
+    } else {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+        ) {
 
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxSize(0.9f)
+                    .clip(shape = RoundedCornerShape(30.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .padding(8.dp),
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            OutlinedButton(
+                                onClick = { navController.navigate(NavigationItem.ListScreen.route) },
+                                modifier = Modifier
+                                    .size(50.dp),
+                                shape = CircleShape,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.background
+                                ),
+                                border = BorderStroke(2.dp, MaterialTheme.colorScheme.secondary),
+                                contentPadding = PaddingValues(0.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.KeyboardArrowLeft,
+                                    contentDescription = "Go back",
+                                    tint = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+
+                            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = product.title,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    textAlign = TextAlign.End
+                                )
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = "By ${product.brand}",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    textAlign = TextAlign.End
+                                )
+                            }
+                        }
+
+                        ShowImageSlider(product = product)
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Category: ",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                            Text(
+                                text = product.category,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Currently in stock: ",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.secondary,
+                            )
+                            Text(
+                                text = product.stock.toString(),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+
+
+
+                        ShowRatingPriceRow(
+                            rating = product.rating,
+                            price = product.price,
+                            discountPercentage = product.discountPercentage,
+                        )
+
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = product.description,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.secondary,
+                            textAlign = TextAlign.Start
+                        )
+                    }
+                }
+            }
+
+        }
     }
 
 

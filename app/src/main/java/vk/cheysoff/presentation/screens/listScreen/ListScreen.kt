@@ -42,6 +42,8 @@ import vk.cheysoff.domain.model.ProductModel
 import vk.cheysoff.presentation.NavigationItem
 import vk.cheysoff.presentation.screens.listScreen.components.CustomSearchBar
 import vk.cheysoff.presentation.screens.listScreen.components.ShowProductCard
+import vk.cheysoff.presentation.screens.mutualComponents.ShowError
+import vk.cheysoff.presentation.screens.mutualComponents.ShowLoader
 
 @Composable
 fun ShowListScreen(
@@ -149,78 +151,7 @@ private fun ShowVkShopText() {
 }
 
 
-@Composable
-private fun ShowError(modifier: Modifier = Modifier, errorMessage: String?, onClick: () -> Unit) {
-    var isErrorExpanded by rememberSaveable { mutableStateOf(false) }
 
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
-        Text(
-            modifier = Modifier.fillMaxWidth(0.9f),
-            text = "Where was an unforseen error, you can refresh page or try again later",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.primary,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(30.dp))
-        Button(
-            modifier = Modifier
-                .height(40.dp)
-                .fillMaxSize(0.7f),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.errorContainer
-            ),
-            enabled = true,
-            shape = RoundedCornerShape(40.dp),
-            onClick = onClick
-        ) {
-            Text(
-                text = "Refresh page",
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.error
-            )
-        }
-        Column(
-            modifier = Modifier
-                .padding(top = 20.dp)
-                .height(100.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-
-            Text(
-                text = "click here to see full error",
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier
-                    .clickable { isErrorExpanded = !isErrorExpanded }
-            )
-
-            if (isErrorExpanded) {
-                Text(
-                    text = "Error: " + (errorMessage ?: "null"),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
-        }
-
-
-    }
-}
-
-@Composable
-private fun ShowLoader(modifier: Modifier = Modifier) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        CircularProgressIndicator(
-            modifier = modifier.align(Alignment.Center)
-        )
-    }
-}
 
 @Composable
 private fun ShowProducts(
