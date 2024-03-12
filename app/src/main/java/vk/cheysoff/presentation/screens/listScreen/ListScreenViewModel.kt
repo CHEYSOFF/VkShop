@@ -24,35 +24,40 @@ class ListScreenViewModel @Inject constructor(
 
     fun processIntent(intent: ShopIntent) {
         when (intent) {
-            is ShopIntent.SearchIntent -> {
-                state = state.copy(
-                    error = null,
-                    isSearching = true
-                )
-                state = state.copy(
-                    products = handleSearchResults(state.searchText),
-                    error = null,
-                    isSearching = false
-                )
-
-            }
-
-            ShopIntent.GetAllProductsIntent -> {
-                state = state.copy(
-                    isLoading = true,
-                    error = null
-                )
-                state = state.copy(
-                    products = getAllProducts(),
-                    isLoading = false,
-                    error = null
-                )
-            }
-
-            is ShopIntent.OnToggleSearchIntent -> onToggleSearch()
+            ShopIntent.SearchIntent -> searchProducts()
+            ShopIntent.GetAllProductsIntent -> getAllProducts()
+            ShopIntent.OnToggleSearchIntent -> onToggleSearch()
             is ShopIntent.SearchTextChangeIntent -> onSearchTextChange(intent.query)
-            is ShopIntent.GoToProductCardIntent -> TODO()
+            is ShopIntent.ChangeSearchTypeIntent -> changeSearchType(intent.searchType)
         }
+    }
+
+    private fun searchProducts() {
+        state = state.copy(
+            error = null,
+            isSearching = true
+        )
+        state = state.copy(
+            products = handleSearchResults(state.searchText),
+            error = null,
+            isSearching = false
+        )
+    }
+
+    private fun getAllProducts() {
+        state = state.copy(
+            isLoading = true,
+            error = null
+        )
+        state = state.copy(
+            products = getAllProductsFlow(),
+            isLoading = false,
+            error = null
+        )
+    }
+
+    private fun changeSearchType(searchType: SearchType) {
+        state.searchType = searchType
     }
 
     private fun onSearchTextChange(text: String) {
@@ -67,7 +72,7 @@ class ListScreenViewModel @Inject constructor(
     }
 
 
-    private fun getAllProducts(): Flow<PagingData<ProductModel>> {
+    private fun getAllProductsFlow(): Flow<PagingData<ProductModel>> {
         return repository
             .getProducts()
             .map { pagingData ->
@@ -77,8 +82,10 @@ class ListScreenViewModel @Inject constructor(
     }
 
     private fun handleSearchResults(query: String): Flow<PagingData<ProductModel>> {
-        return repository
-            .getProductsByRemoteSearch(query)
+        return when (state.searchType) {
+            SearchType.Local -> repository.getProductsByLocalSearch(query)
+            SearchType.Remote -> repository.getProductsByRemoteSearch(query)
+        }
             .map { pagingData ->
                 pagingData.map { it }
             }

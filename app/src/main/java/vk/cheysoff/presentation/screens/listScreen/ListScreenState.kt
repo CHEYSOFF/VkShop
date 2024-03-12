@@ -10,5 +10,6 @@ data class ListScreenState(
     val searchText: String = "",
     val isLoading: Boolean = false,
     val isSearching: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    var searchType: SearchType = SearchType.Remote
 )

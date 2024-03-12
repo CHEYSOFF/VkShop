@@ -7,5 +7,5 @@ sealed class ShopIntent {
     data object SearchIntent : ShopIntent()
     data object OnToggleSearchIntent : ShopIntent()
     data object GetAllProductsIntent : ShopIntent()
-    class GoToProductCardIntent(val product: ProductModel) : ShopIntent()
+    class ChangeSearchTypeIntent(val searchType: SearchType) : ShopIntent()
 }

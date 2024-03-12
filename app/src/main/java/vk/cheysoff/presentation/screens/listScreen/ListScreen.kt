@@ -72,7 +72,11 @@ fun ShowListScreen(
             active = false,
             onActiveChange = { onIntentReceived(ShopIntent.OnToggleSearchIntent) },
             modifier = Modifier.fillMaxWidth(),
-            placeholderText = "Search for products"
+            placeholderText = "Search for products",
+            onSearchTypeChange = { searchType ->
+                onIntentReceived(ShopIntent.ChangeSearchTypeIntent(searchType))
+            },
+            searchType = state.searchType
         )
 
         Box(modifier = Modifier
@@ -171,7 +175,8 @@ private fun ShowError(modifier: Modifier = Modifier, errorMessage: String?, onCl
             ),
             enabled = true,
             shape = RoundedCornerShape(40.dp),
-            onClick = { onClick.invoke() }) {
+            onClick = onClick
+        ) {
             Text(
                 text = "Refresh page",
                 style = MaterialTheme.typography.titleSmall,

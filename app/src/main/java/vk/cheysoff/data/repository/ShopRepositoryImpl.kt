@@ -12,6 +12,7 @@ import vk.cheysoff.data.local.ProductEntity
 import vk.cheysoff.data.local.ShopDatabase
 import vk.cheysoff.data.mappers.toProductEntity
 import vk.cheysoff.data.mappers.toProductModel
+import vk.cheysoff.data.remote.SearchLocalMediator
 import vk.cheysoff.data.remote.SearchRemoteMediator
 import vk.cheysoff.data.remote.ShopApi
 import vk.cheysoff.domain.model.ProductModel
@@ -58,11 +59,11 @@ class ShopRepositoryImpl @Inject constructor(
             }
     }
 
-    @OptIn(ExperimentalPagingApi::class)
+    @OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
     override fun getProductsByLocalSearch(query: String): Flow<PagingData<ProductModel>> {
         return Pager(
             config = PagingConfig(pageSize = 20),
-            remoteMediator = SearchRemoteMediator(
+            remoteMediator = SearchLocalMediator(
                 shopDatabase = shopDatabase,
                 api = shopApi,
                 queryString = query

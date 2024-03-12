@@ -20,6 +20,7 @@ private val DarkColorScheme = darkColorScheme(
     errorContainer = LightRed,
     error = White,
     surfaceTint = White,
+    surfaceVariant = DarkOrange
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -31,6 +32,7 @@ private val LightColorScheme = lightColorScheme(
     errorContainer = LightRed,
     error = Black,
     surfaceTint = Black,
+    surfaceVariant = LightOrange
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
