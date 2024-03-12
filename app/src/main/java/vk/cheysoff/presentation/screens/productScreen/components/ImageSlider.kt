@@ -80,7 +80,8 @@ fun ShowImageSlider(product: ProductModel) {
             ) {
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowLeft,
-                    contentDescription = "Go back"
+                    contentDescription = "Go back",
+                    tint = MaterialTheme.colorScheme.secondary
                 )
             }
             IconButton(
@@ -95,7 +96,8 @@ fun ShowImageSlider(product: ProductModel) {
             ) {
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = "Go forward"
+                    contentDescription = "Go forward",
+                    tint = MaterialTheme.colorScheme.secondary
                 )
             }
         }

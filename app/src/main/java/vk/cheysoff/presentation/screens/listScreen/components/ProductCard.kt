@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import vk.cheysoff.R
 import vk.cheysoff.domain.model.ProductModel
+import vk.cheysoff.presentation.screens.mutualComponents.ShowRatingPriceRow
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -87,51 +88,11 @@ fun ShowProductCard(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    modifier = Modifier.size(30.dp),
-                    painter = painterResource(id = R.drawable.star_full_svgrepo_com),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = product.rating.toString(),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (product.discountPercentage != 0.toDouble()) {
-                    val previousPrice =
-                        (product.price / (1.toDouble() - product.discountPercentage / 100)).roundToInt()
-                    Text(
-                        text = "$previousPrice $",
-                        style = MaterialTheme.typography.labelSmall.copy(textDecoration = TextDecoration.LineThrough),
-                        color = MaterialTheme.colorScheme.primary,
-                        textAlign = TextAlign.Center,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                }
-
-                Text(
-                    text = "${product.price} $",
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
+        ShowRatingPriceRow(
+            rating = product.rating,
+            price = product.price,
+            discountPercentage = product.discountPercentage,
+        )
     }
 
 

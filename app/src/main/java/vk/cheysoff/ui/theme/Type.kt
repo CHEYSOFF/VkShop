@@ -34,6 +34,12 @@ val Typography = Typography(
         fontSize = 20.sp,
         letterSpacing = 0.5.sp,
     ),
+    bodyMedium = TextStyle(
+        fontFamily = UrbanistFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 20.sp,
+        letterSpacing = 0.sp
+    ),
     bodySmall = TextStyle(
         fontFamily = UrbanistFontFamily,
         fontWeight = FontWeight.Normal,
