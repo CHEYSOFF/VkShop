@@ -92,20 +92,46 @@ fun ShowProductScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Text(
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
-                        text = product.title,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.secondary,
-                        textAlign = TextAlign.Center
-                    )
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = "By ${product.brand}",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.secondary,
-                        textAlign = TextAlign.Center
-                    )
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        OutlinedButton(
+                            onClick = { navController.navigate(NavigationItem.ListScreen.route) },
+                            modifier = Modifier
+                                .size(50.dp),
+                            shape = CircleShape,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.background
+                            ),
+                            border = BorderStroke(2.dp, MaterialTheme.colorScheme.secondary),
+                            contentPadding = PaddingValues(0.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.KeyboardArrowLeft,
+                                contentDescription = "Go back",
+                                tint = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = product.title,
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.secondary,
+                                textAlign = TextAlign.End
+                            )
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = "By ${product.brand}",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.secondary,
+                                textAlign = TextAlign.End
+                            )
+                        }
+                    }
+
                     ShowImageSlider(product = product)
 
                     Row(
@@ -154,26 +180,6 @@ fun ShowProductScreen(
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.secondary,
                         textAlign = TextAlign.Start
-                    )
-                }
-
-
-                OutlinedButton(
-                    onClick = { navController.navigate(NavigationItem.ListScreen.route) },
-                    modifier = Modifier
-                        .size(50.dp)
-                        .align(Alignment.TopStart),
-                    shape = CircleShape,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.background
-                    ),
-                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.secondary),
-                    contentPadding = PaddingValues(0.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.KeyboardArrowLeft,
-                        contentDescription = "Go back",
-                        tint = MaterialTheme.colorScheme.secondary
                     )
                 }
             }
