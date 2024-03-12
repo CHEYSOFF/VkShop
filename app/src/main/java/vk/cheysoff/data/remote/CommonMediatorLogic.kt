@@ -75,6 +75,7 @@ private suspend fun <T> commonMediatorLogicLoad(
             state.config.pageSize
         )
 
+        databaseInteraction?.invoke(products as List<ProductDto>)
 
         RemoteMediator.MediatorResult.Success(
             endOfPaginationReached = products.isEmpty()

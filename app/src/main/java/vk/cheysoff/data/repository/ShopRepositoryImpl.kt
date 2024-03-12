@@ -65,7 +65,6 @@ class ShopRepositoryImpl @Inject constructor(
             config = PagingConfig(pageSize = 20),
             remoteMediator = SearchLocalMediator(
                 shopDatabase = shopDatabase,
-                api = shopApi,
                 queryString = query
             ),
             pagingSourceFactory = {

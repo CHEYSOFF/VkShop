@@ -24,11 +24,25 @@ class ListScreenViewModel @Inject constructor(
 
     fun processIntent(intent: ShopIntent) {
         when (intent) {
-            ShopIntent.SearchIntent -> searchProducts()
-            ShopIntent.GetAllProductsIntent -> getAllProducts()
-            ShopIntent.OnToggleSearchIntent -> onToggleSearch()
-            is ShopIntent.SearchTextChangeIntent -> onSearchTextChange(intent.query)
-            is ShopIntent.ChangeSearchTypeIntent -> changeSearchType(intent.searchType)
+            ShopIntent.SearchIntent -> {
+                searchProducts()
+            }
+
+            ShopIntent.GetAllProductsIntent -> {
+                getAllProducts()
+            }
+
+            ShopIntent.OnToggleSearchIntent -> {
+                onToggleSearch()
+            }
+
+            is ShopIntent.SearchTextChangeIntent -> {
+                onSearchTextChange(intent.query)
+            }
+
+            is ShopIntent.ChangeSearchTypeIntent -> {
+                changeSearchType(intent.searchType)
+            }
         }
     }
 

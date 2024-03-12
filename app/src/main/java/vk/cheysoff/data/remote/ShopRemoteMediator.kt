@@ -1,5 +1,6 @@
 package vk.cheysoff.data.remote
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -22,10 +23,12 @@ class ShopRemoteMediator @Inject constructor(
             state = state,
             shopDatabase = shopDatabase,
             networkCall =  { skip, limit ->
-                api.getProductList(
+                val tm = api.getProductList(
                     skip = skip,
                     limit = limit
                 ).products
+                Log.d("CHEYSOFF", tm.size.toString())
+                tm
             })
     }
 }

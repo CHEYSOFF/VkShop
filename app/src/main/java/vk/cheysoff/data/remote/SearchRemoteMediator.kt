@@ -13,7 +13,7 @@ import vk.cheysoff.presentation.screens.listScreen.ListScreenViewModel
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
-class SearchRemoteMediator @Inject constructor(
+class SearchRemoteMediator(
     private val shopDatabase: ShopDatabase,
     private val api: ShopApi,
     private val queryString: String,

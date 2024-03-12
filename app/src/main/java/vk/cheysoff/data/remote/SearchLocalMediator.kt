@@ -9,9 +9,8 @@ import vk.cheysoff.data.local.ShopDatabase
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
-class SearchLocalMediator @Inject constructor(
+class SearchLocalMediator(
     private val shopDatabase: ShopDatabase,
-    private val api: ShopApi,
     private val queryString: String,
 ) : RemoteMediator<Int, ProductEntity>() {
 
