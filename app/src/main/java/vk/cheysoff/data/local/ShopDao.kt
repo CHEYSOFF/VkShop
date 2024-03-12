@@ -17,6 +17,6 @@ interface ShopDao {
     @Query("DELETE FROM vkshop")
     suspend fun clearAll()
 
-    @Query("SELECT * FROM vkshop WHERE title LIKE :query OR description LIKE :query")
-    fun searchProducts(query: String): List<ProductEntity>
+    @Query("SELECT * FROM vkshop WHERE title LIKE '%' || :query || '%' OR description LIKE '%' || :query || '%'")
+    suspend fun searchProducts(query: String): List<ProductEntity>
 }

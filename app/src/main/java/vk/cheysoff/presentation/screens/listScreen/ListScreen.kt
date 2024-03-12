@@ -156,7 +156,7 @@ private fun ShowError(modifier: Modifier = Modifier, errorMessage: String?, onCl
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Bottom
+        verticalArrangement = Arrangement.Top
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(0.9f),
