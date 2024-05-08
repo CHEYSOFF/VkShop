@@ -41,10 +41,6 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     composable(NavigationItem.ListScreen.route) {
-                        LaunchedEffect(Unit) {
-                            listScreenViewModel.processIntent(ShopIntent.GetAllProductsIntent)
-                        }
-
                         ShowListScreen(
                             state = listScreenViewModel.state,
                             navController = navController

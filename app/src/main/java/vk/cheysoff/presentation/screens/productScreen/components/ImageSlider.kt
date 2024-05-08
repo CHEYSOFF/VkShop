@@ -34,10 +34,12 @@ import vk.cheysoff.domain.model.ProductModel
 fun ShowImageSlider(product: ProductModel) {
     val scope = rememberCoroutineScope()
 
+    val size = product.images.size
+
     val pagerState = rememberPagerState(
-        initialPage = 1,
+        initialPage = 0,
         initialPageOffsetFraction = 0f,
-        pageCount = { product.images.size }
+        pageCount = { size }
     )
     Box(
         modifier = Modifier
@@ -47,12 +49,13 @@ fun ShowImageSlider(product: ProductModel) {
         HorizontalPager(
             modifier = Modifier.fillMaxSize(),
             state = pagerState,
-            key = { index -> product.images[index] }
+            key = { index -> product.images[index] },
+
         ) { index ->
             AsyncImage(
                 modifier = Modifier
                     .fillMaxWidth(),
-                model = product.images[index],
+                model = product.images[index % size],
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
                 alignment = Alignment.Center
@@ -72,7 +75,7 @@ fun ShowImageSlider(product: ProductModel) {
                 onClick = {
                     scope.launch {
                         pagerState.animateScrollToPage(
-                            pagerState.currentPage - 1
+                            (size + pagerState.currentPage - 1) % size
                         )
                     }
                 },
@@ -88,7 +91,7 @@ fun ShowImageSlider(product: ProductModel) {
                 onClick = {
                     scope.launch {
                         pagerState.animateScrollToPage(
-                            pagerState.currentPage + 1
+                            (pagerState.currentPage + 1) % size
                         )
                     }
                 },

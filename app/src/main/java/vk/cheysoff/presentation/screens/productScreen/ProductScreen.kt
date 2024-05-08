@@ -127,14 +127,14 @@ fun ShowProductScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     text = product.title,
                                     style = MaterialTheme.typography.titleLarge,
-                                    color = MaterialTheme.colorScheme.secondary,
+                                    color = MaterialTheme.colorScheme.primary,
                                     textAlign = TextAlign.End
                                 )
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
                                     text = "By ${product.brand}",
                                     style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.secondary,
+                                    color = MaterialTheme.colorScheme.primary,
                                     textAlign = TextAlign.End
                                 )
                             }

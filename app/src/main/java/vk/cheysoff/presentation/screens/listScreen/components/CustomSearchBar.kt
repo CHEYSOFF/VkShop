@@ -1,5 +1,6 @@
 package vk.cheysoff.presentation.screens.listScreen.components
 
+import android.view.ViewTreeObserver
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -30,7 +31,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,11 +43,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.onClick
@@ -53,11 +58,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import vk.cheysoff.R
 import vk.cheysoff.presentation.screens.listScreen.SearchType
+import vk.cheysoff.presentation.screens.listScreen.ShopIntent
 
 @Composable
 fun CustomSearchBar(
+    onClear: () -> Unit,
     query: String,
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
@@ -67,13 +76,13 @@ fun CustomSearchBar(
     enabled: Boolean = true,
     placeholderText: String = "",
     onSearchTypeChange: (SearchType) -> Unit,
-    searchType: SearchType
+    searchType: SearchType,
+    focusRequester: FocusRequester,
+    focusManager: FocusManager
 ) {
 
-    val focusRequester = remember { FocusRequester() }
     var currentSearchType by rememberSaveable { mutableStateOf(searchType) }
 
-    val focusManager = LocalFocusManager.current
     Column(
         modifier = modifier
     ) {
@@ -85,7 +94,10 @@ fun CustomSearchBar(
             ),
             enabled = enabled,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(onSearch = { onSearch(query) }),
+            keyboardActions = KeyboardActions(onSearch = {
+                onSearch(query)
+                focusManager.clearFocus()
+            }),
             singleLine = true,
             modifier = Modifier
                 .height(66.dp)
@@ -106,7 +118,7 @@ fun CustomSearchBar(
                         .background(MaterialTheme.colorScheme.primaryContainer)
                         .border(
                             width = 2.dp,
-                            color = MaterialTheme.colorScheme.outline,
+                            color = MaterialTheme.colorScheme.primary,
                             shape = RoundedCornerShape(size = 30.dp)
                         )
                         .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -127,7 +139,7 @@ fun CustomSearchBar(
                                     Text(
                                         text = placeholderText,
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.secondary
+                                        color = MaterialTheme.colorScheme.primary
                                     )
                                 }
                                 innerTextField()
@@ -143,7 +155,7 @@ fun CustomSearchBar(
                                 contentDescription = "search icon",
                                 modifier = Modifier
                                     .padding(4.dp),
-                                tint = MaterialTheme.colorScheme.outline,
+                                tint = MaterialTheme.colorScheme.surfaceTint,
                             )
                         }
                     }
@@ -156,65 +168,119 @@ fun CustomSearchBar(
             }
         }
     }
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.Top
+            .height(50.dp)
     ) {
-        Button(
+
+        Row(
             modifier = Modifier
-                .fillMaxHeight()
-                .weight(0.5f),
-            onClick = {
-                onSearchTypeChange(SearchType.Local)
-                currentSearchType = SearchType.Local
-            },
-            shape = RoundedCornerShape(bottomStart = 60.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
-            ),
-            enabled = (currentSearchType != SearchType.Local)
+                .fillMaxSize(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.Top
         ) {
-            Text(
-                text = "Local",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.fillMaxSize(),
-                textAlign = TextAlign.Center
+            Button(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(0.5f),
+                onClick = {
+                    onSearchTypeChange(SearchType.Local)
+                    currentSearchType = SearchType.Local
+                },
+                shape = RoundedCornerShape(bottomStart = 60.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                ),
+                enabled = (currentSearchType != SearchType.Local)
+            ) {
+                Text(
+                    text = "Local",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.fillMaxSize(),
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            Spacer(
+                modifier = Modifier
+                    .width(2.dp)
+                    .fillMaxHeight(0.6f)
             )
+
+            Button(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(0.5f),
+                onClick = {
+                    onSearchTypeChange(SearchType.Remote)
+                    currentSearchType = SearchType.Remote
+                },
+                shape = RoundedCornerShape(bottomEnd = 60.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                ),
+                enabled = (currentSearchType != SearchType.Remote)
+            ) {
+                Text(
+                    text = "Remote",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.fillMaxSize(),
+                    textAlign = TextAlign.Center
+                )
+            }
         }
 
-        Spacer(
-            modifier = Modifier
-                .width(2.dp)
-                .fillMaxHeight(0.6f)
-        )
+        Box(modifier = Modifier
+            .height(50.dp)
+            .width(70.dp)
+            .clip(shape = RoundedCornerShape(22.dp))
+            .clickable {
+                onClear()
+            }
+            .background(MaterialTheme.colorScheme.background)
+            .align(Alignment.Center)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(5.dp)
+                    .clip(shape = RoundedCornerShape(22.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .align(Alignment.Center)
+            ) {
+                Text(
+                    text = "clear",
+                    modifier = Modifier.align(Alignment.Center),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
 
-        Button(
-            modifier = Modifier
-                .fillMaxHeight()
-                .weight(0.5f),
-            onClick = {
-                onSearchTypeChange(SearchType.Remote)
-                currentSearchType = SearchType.Remote
-            },
-            shape = RoundedCornerShape(bottomEnd = 60.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
-            ),
-            enabled = (currentSearchType != SearchType.Remote)
-        ) {
-            Text(
-                text = "Remote",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.fillMaxSize(),
-                textAlign = TextAlign.Center
-            )
         }
     }
+
+    if (!keyboardAsState().value) {
+        LaunchedEffect(Unit) {
+            focusManager.clearFocus()
+        }
+    }
+
+}
+
+@Composable
+fun keyboardAsState(): State<Boolean> {
+    val keyboardState = remember { mutableStateOf(false) }
+    val view = LocalView.current
+    val viewTreeObserver = view.viewTreeObserver
+    DisposableEffect(viewTreeObserver) {
+        val listener = ViewTreeObserver.OnGlobalLayoutListener {
+            keyboardState.value = ViewCompat.getRootWindowInsets(view)
+                ?.isVisible(WindowInsetsCompat.Type.ime()) ?: true
+        }
+        viewTreeObserver.addOnGlobalLayoutListener(listener)
+        onDispose { viewTreeObserver.removeOnGlobalLayoutListener(listener) }
+    }
+    return keyboardState
 }

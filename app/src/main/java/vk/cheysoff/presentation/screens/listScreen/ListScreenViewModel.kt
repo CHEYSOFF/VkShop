@@ -23,6 +23,10 @@ class ListScreenViewModel @Inject constructor(
     var state by mutableStateOf(ListScreenState())
         private set
 
+    init {
+        getAllProducts()
+    }
+
     fun processIntent(intent: ShopIntent) {
         when (intent) {
             ShopIntent.SearchIntent -> {
@@ -52,11 +56,13 @@ class ListScreenViewModel @Inject constructor(
             error = null,
             isSearching = true
         )
-        state = state.copy(
-            products = handleSearchResults(state.searchText),
-            error = null,
-            isSearching = false
-        )
+        handleSearchResults(state.searchText).also {
+            state = state.copy(
+                products = it,
+                error = null,
+                isSearching = false
+            )
+        }
     }
 
     private fun getAllProducts() {
@@ -64,11 +70,14 @@ class ListScreenViewModel @Inject constructor(
             isLoading = true,
             error = null
         )
-        state = state.copy(
-            products = getAllProductsFlow(),
-            isLoading = false,
-            error = null
-        )
+        getAllProductsFlow().also {
+            state = state.copy(
+                products = it,
+                isLoading = false,
+                error = null
+            )
+        }
+
     }
 
     private fun changeSearchType(searchType: SearchType) {
@@ -101,12 +110,6 @@ class ListScreenViewModel @Inject constructor(
             SearchType.Local -> repository.getProductsByLocalSearch(query)
             SearchType.Remote -> repository.getProductsByRemoteSearch(query)
         }
-            .map { pagingData ->
-                pagingData.map {
-                    Log.d("CHEYSER", it.title)
-                    it
-                }
-            }
             .cachedIn(viewModelScope)
     }
 

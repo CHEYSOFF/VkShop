@@ -72,7 +72,7 @@ fun ShowProductCard(
                     .fillMaxWidth()
                     .basicMarquee(),
                 text = product.title,
-                color = MaterialTheme.colorScheme.secondary,
+                color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.titleSmall
             )
             Text(

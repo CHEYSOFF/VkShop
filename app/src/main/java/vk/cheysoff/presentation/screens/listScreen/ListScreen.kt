@@ -2,11 +2,14 @@ package vk.cheysoff.presentation.screens.listScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,11 +28,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -51,9 +58,18 @@ fun ShowListScreen(
     navController: NavController,
     onIntentReceived: (ShopIntent) -> Unit,
 ) {
+
+    val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })
+            }
             .background(MaterialTheme.colorScheme.background)
             .padding(
                 start = 8.dp,
@@ -66,6 +82,10 @@ fun ShowListScreen(
         ShowVkShopText()
 
         CustomSearchBar(
+            onClear = {
+                onIntentReceived(ShopIntent.SearchTextChangeIntent(""))
+                onIntentReceived(ShopIntent.GetAllProductsIntent)
+            },
             query = state.searchText,
             onQueryChange = { newText ->
                 onIntentReceived(ShopIntent.SearchTextChangeIntent(query = newText))
@@ -78,25 +98,10 @@ fun ShowListScreen(
             onSearchTypeChange = { searchType ->
                 onIntentReceived(ShopIntent.ChangeSearchTypeIntent(searchType))
             },
-            searchType = state.searchType
+            searchType = state.searchType,
+            focusRequester = focusRequester,
+            focusManager = focusManager
         )
-
-        Box(modifier = Modifier
-            .height(30.dp)
-            .width(70.dp)
-            .clip(shape = RoundedCornerShape(22.dp))
-            .clickable {
-                onIntentReceived(ShopIntent.SearchTextChangeIntent(""))
-                onIntentReceived(ShopIntent.GetAllProductsIntent)
-            }
-            .background(MaterialTheme.colorScheme.primaryContainer)) {
-            Text(
-                text = "clear",
-                modifier = Modifier.align(Alignment.Center),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.secondary
-            )
-        }
 
 
         if (state.isLoading) {
@@ -151,33 +156,46 @@ private fun ShowVkShopText() {
 }
 
 
-
-
 @Composable
 private fun ShowProducts(
     modifier: Modifier = Modifier,
     products: LazyPagingItems<ProductModel>,
     onCardClick: (Int) -> Unit
 ) {
-    LazyVerticalStaggeredGrid(
-        modifier = modifier
-            .fillMaxSize(),
-        columns = StaggeredGridCells.Fixed(2),
-        verticalItemSpacing = 12.dp,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(products.itemCount) { index ->
-            products[index]?.let { product ->
-                ShowProductCard(
-                    product = product,
-                    onClick = onCardClick,
-                )
-            }
-
+    if (products.itemCount == 0) {
+        Box(modifier = modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.7f)) {
+            Text(
+                modifier = Modifier.align(Alignment.Center),
+                text = "Haven't found anything.\n Sorry!",
+                minLines = 2,
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center
+            )
         }
-        item {
-            if (products.loadState.append is LoadState.Loading) {
-                CircularProgressIndicator()
+    } else {
+        LazyVerticalStaggeredGrid(
+            modifier = modifier
+                .fillMaxSize(),
+            columns = StaggeredGridCells.Fixed(2),
+            verticalItemSpacing = 12.dp,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(products.itemCount) { index ->
+                products[index]?.let { product ->
+                    ShowProductCard(
+                        product = product,
+                        onClick = onCardClick,
+                    )
+                }
+
+            }
+            item {
+                if (products.loadState.append is LoadState.Loading) {
+                    CircularProgressIndicator()
+                }
             }
         }
     }
